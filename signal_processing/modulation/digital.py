@@ -33,31 +33,17 @@ def am_modulate(message: np.ndarray, carrier_freq: float,
     modulated = (1 + modulation_index * message) * carrier
     return modulated
 
-def am_demodulate(am_signal: np.ndarray, carrier_freq: float,
-                  fs: float = 1000.0) -> np.ndarray:
+def am_demodulate(am_signal, carrier_freq, fs=1000.0):
     """
     AM demodulation using envelope detection.
     """
-    # Rectify
-    rectified = np.abs(am_signal)
-    
-    # Low-pass filter to extract envelope
-    # Design a simple low-pass filter
-    cutoff = carrier_freq * 0.1  # Cutoff at 10% of carrier freq
-    nyquist = fs / 2.0
-    normal_cutoff = cutoff / nyquist
-    
-    # Use a simple moving average as LPF for demo
-    # In practice, would use proper FIR/IIR filter
-    window_size = int(fs / (cutoff * 4))
-    if window_size % 2 == 0:
-        window_size += 1
-    window = np.ones(window_size) / window_size
-    envelope = np.convolve(rectified, window, mode='same')
-    
-    # Remove DC offset
+
+    analytic_signal = signal.hilbert(am_signal)
+
+    envelope = np.abs(analytic_signal)
+
     envelope = envelope - np.mean(envelope)
-    
+
     return envelope
 
 def fm_modulate(message: np.ndarray, carrier_freq: float,
