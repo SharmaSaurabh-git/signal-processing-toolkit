@@ -6,7 +6,7 @@
 [![Code Size](https://img.shields.io/github/languages/code-size/SharmaSaurabh-git/signal-processing-toolkit)](https://github.com/SharmaSaurabh-git/signal-processing-toolkit)
 [![GitHub Stars](https://img.shields.io/github/stars/SharmaSaurabh-git/signal-processing-toolkit?style=social)](https://github.com/SharmaSaurabh-git/signal-processing-toolkit/stargazers)
 
-A Python library for signal processing operations commonly used in Electrical and Computer Engineering: FIR filter design, spectral analysis, and analog/digital modulation — built on NumPy and SciPy, with a small set of plotting and signal-generation utilities on top.
+A Python library for signal processing operations commonly used in Electronics and Communication Engineering: FIR filter design, spectral analysis, and analog/digital modulation — built on NumPy and SciPy, with a small set of plotting and signal-generation utilities on top.
 
 ## Features
 
