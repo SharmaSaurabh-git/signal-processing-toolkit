@@ -1,123 +1,118 @@
 """
-Signal transforms: FFT, DFT, STFT, wavelet transforms
+Signal transforms: FFT, spectral density, spectrogram, STFT, and
+related frequency-domain analysis tools.
 """
 import numpy as np
-from typing import Union, Tuple, Optional
-import scipy.signal as signal
-import scipy.fftpack as fftpack
+from typing import Tuple
+import scipy.signal as sps
 
-def fft(signal: np.ndarray, n: int = None) -> np.ndarray:
+
+def fft(data: np.ndarray, n: int = None) -> np.ndarray:
     """
-    Compute Fast Fourier Transform.
-    
+    Compute the Fast Fourier Transform of a signal.
+
     Parameters
     ----------
-    signal : ndarray
-        Input signal
+    data : ndarray
+        Input signal.
     n : int, optional
-        Length of the transformed axis (default: length of signal)
-        
+        Length of the transformed axis. Defaults to ``len(data)``.
+
     Returns
     -------
-    spectrum : ndarray
-        Complex FFT coefficients
+    ndarray
+        Complex FFT coefficients.
     """
-    return np.fft.fft(signal, n=n)
+    return np.fft.fft(data, n=n)
+
 
 def ifft(spectrum: np.ndarray, n: int = None) -> np.ndarray:
-    """
-    Compute Inverse Fast Fourier Transform.
-    """
+    """Compute the Inverse Fast Fourier Transform."""
     return np.fft.ifft(spectrum, n=n)
 
+
 def fftfreq(n: int, d: float = 1.0) -> np.ndarray:
-    """
-    Return the Discrete Fourier Transform sample frequencies.
-    """
+    """Return the DFT sample frequencies for a length-`n` signal."""
     return np.fft.fftfreq(n, d=d)
 
+
 def fftshift(spectrum: np.ndarray) -> np.ndarray:
-    """
-    Shift the zero-frequency component to the center of the spectrum.
-    """
+    """Shift the zero-frequency component to the center of the spectrum."""
     return np.fft.fftshift(spectrum)
 
+
 def ifftshift(spectrum: np.ndarray) -> np.ndarray:
-    """
-    Inverse of fftshift.
-    """
+    """Inverse of :func:`fftshift`."""
     return np.fft.ifftshift(spectrum)
 
-def power_spectral_density(signal: np.ndarray, fs: float = 1.0,
-                          nperseg: int = None) -> Tuple[np.ndarray, np.ndarray]:
+
+def power_spectral_density(data: np.ndarray, fs: float = 1.0,
+                            nperseg: int = None) -> Tuple[np.ndarray, np.ndarray]:
     """
-    Compute power spectral density using Welch's method.
-    
+    Estimate power spectral density using Welch's method.
+
     Parameters
     ----------
-    signal : ndarray
-        Input signal
+    data : ndarray
+        Input signal.
     fs : float
-        Sampling frequency
+        Sampling frequency.
     nperseg : int, optional
-        Length of each segment
-        
+        Length of each averaging segment.
+
     Returns
     -------
     freqs : ndarray
-        Array of sample frequencies
+        Sample frequencies.
     psd : ndarray
-        Power spectral density
+        Power spectral density estimate.
     """
-    freqs, psd = signal.welch(signal, fs=fs, nperseg=nperseg)
+    freqs, psd = sps.welch(data, fs=fs, nperseg=nperseg)
     return freqs, psd
 
-def spectrogram(signal: np.ndarray, fs: float = 1.0,
-                nperseg: int = 256, noverlap: int = None) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+
+# Backward/documentation-compatible alias — doc/api.md and common DSP
+# convention both call this "welch".
+welch = power_spectral_density
+
+
+def spectrogram(data: np.ndarray, fs: float = 1.0,
+                 nperseg: int = 256, noverlap: int = None) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
-    Compute spectrogram using short-time Fourier transform.
-    
+    Compute a spectrogram via short-time Fourier transform magnitude.
+
     Returns
     -------
     freqs : ndarray
-        Array of sample frequencies
     times : ndarray
-        Array of segment times
     Sxx : ndarray
-        Spectrogram of the signal
+        Spectrogram (power) of the signal.
     """
-    freqs, times, Sxx = signal.spectrogram(signal, fs=fs, 
-                                           nperseg=nperseg, noverlap=noverlap)
+    freqs, times, Sxx = sps.spectrogram(data, fs=fs, nperseg=nperseg, noverlap=noverlap)
     return freqs, times, Sxx
 
-def stft(signal: np.ndarray, fs: float = 1.0,
+
+def stft(data: np.ndarray, fs: float = 1.0,
          nperseg: int = 256, noverlap: int = None) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """
-    Compute Short-Time Fourier Transform.
-    """
-    freqs, times, Zxx = signal.stft(signal, fs=fs, 
-                                    nperseg=nperseg, noverlap=noverlap)
+    """Compute the Short-Time Fourier Transform."""
+    freqs, times, Zxx = sps.stft(data, fs=fs, nperseg=nperseg, noverlap=noverlap)
     return freqs, times, Zxx
+
 
 def istft(Zxx: np.ndarray, fs: float = 1.0,
           nperseg: int = 256, noverlap: int = None) -> Tuple[np.ndarray, np.ndarray]:
-    """
-    Compute Inverse Short-Time Fourier Transform.
-    """
-    t, x = signal.istft(Zxx, fs=fs, nperseg=nperseg, noverlap=noverlap)
+    """Compute the Inverse Short-Time Fourier Transform."""
+    t, x = sps.istft(Zxx, fs=fs, nperseg=nperseg, noverlap=noverlap)
     return t, x
+
 
 def coherence(signal1: np.ndarray, signal2: np.ndarray,
               fs: float = 1.0, nperseg: int = 256) -> Tuple[np.ndarray, np.ndarray]:
-    """
-    Compute magnitude squared coherence between two signals.
-    """
-    freqs, Cxy = signal.coherence(signal1, signal2, fs=fs, nperseg=nperseg)
+    """Compute the magnitude-squared coherence between two signals."""
+    freqs, Cxy = sps.coherence(signal1, signal2, fs=fs, nperseg=nperseg)
     return freqs, Cxy
 
-def correlate(signal1: np.ndarray, signal2: np.ndarray,
-              mode: str = 'full') -> np.ndarray:
-    """
-    Cross-correlate two signals.
-    """
-    return signal.correlate(signal1, signal2, mode=mode)
+
+def correlate(signal1: np.ndarray, signal2: np.ndarray, mode: str = "full") -> np.ndarray:
+    """Cross-correlate two signals."""
+    return sps.correlate(signal1, signal2, mode=mode)

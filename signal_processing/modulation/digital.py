@@ -2,9 +2,8 @@
 Modulation and demodulation techniques for communication systems
 """
 import numpy as np
-from typing import Tuple, Union, Optional
-import scipy.signal as signal
-import scipy.fftpack as fftpack
+from typing import Tuple
+import scipy.signal as sps
 
 def am_modulate(message: np.ndarray, carrier_freq: float, 
                 modulation_index: float = 0.5, 
@@ -33,17 +32,29 @@ def am_modulate(message: np.ndarray, carrier_freq: float,
     modulated = (1 + modulation_index * message) * carrier
     return modulated
 
-def am_demodulate(am_signal, carrier_freq, fs=1000.0):
+def am_demodulate(am_signal: np.ndarray, carrier_freq: float, fs: float = 1000.0) -> np.ndarray:
     """
-    AM demodulation using envelope detection.
+    Demodulate an AM signal using envelope detection (Hilbert transform).
+
+    Parameters
+    ----------
+    am_signal : ndarray
+        AM modulated signal.
+    carrier_freq : float
+        Carrier frequency in Hz. Unused by envelope detection itself but
+        kept for API symmetry with `am_modulate` and future PLL-based
+        implementations.
+    fs : float
+        Sampling frequency in Hz.
+
+    Returns
+    -------
+    ndarray
+        Recovered (DC-removed) message signal.
     """
-
-    analytic_signal = signal.hilbert(am_signal)
-
+    analytic_signal = sps.hilbert(am_signal)
     envelope = np.abs(analytic_signal)
-
     envelope = envelope - np.mean(envelope)
-
     return envelope
 
 def fm_modulate(message: np.ndarray, carrier_freq: float,
@@ -82,7 +93,7 @@ def fm_demodulate(fm_signal: np.ndarray, carrier_freq: float,
     FM demodulation using phase-locked loop (simplified).
     """
     # Simple approach: differentiate phase
-    analytic_signal = signal.hilbert(fm_signal)
+    analytic_signal = sps.hilbert(fm_signal)
     instantaneous_phase = np.unwrap(np.angle(analytic_signal))
     instantaneous_frequency = np.diff(instantaneous_phase) * fs / (2 * np.pi)
     
@@ -94,36 +105,75 @@ def fm_demodulate(fm_signal: np.ndarray, carrier_freq: float,
     
     return message
 
-def psk_modulate(bits: np.ndarray, carrier_freq: float,
-                 fs: float = 1000.0, 
-                 samples_per_symbol: int = 16) -> np.ndarray:
+def bpsk_modulate(bits: np.ndarray, carrier_freq: float,
+                   fs: float = 1000.0,
+                   samples_per_symbol: int = 16) -> np.ndarray:
     """
     Binary Phase Shift Keying (BPSK) modulation.
+
+    Parameters
+    ----------
+    bits : ndarray
+        1D array of 0/1 bits to modulate.
+    carrier_freq : float
+        Carrier frequency in Hz.
+    fs : float
+        Sampling frequency in Hz.
+    samples_per_symbol : int
+        Number of samples used to represent each symbol.
+
+    Returns
+    -------
+    ndarray
+        BPSK modulated signal.
     """
-    # Map bits to symbols: 0 -> -1, 1 -> +1
-    symbols = 2 * bits.astype(float) - 1
-    
-    # Upsample
+    bits = np.asarray(bits)
+    if bits.size == 0:
+        raise ValueError("bits must contain at least one element")
+
+    symbols = 2 * bits.astype(float) - 1  # 0 -> -1, 1 -> +1
     upsampled = np.repeat(symbols, samples_per_symbol)
-    
-    # Generate carrier
+
     t = np.arange(len(upsampled)) / fs
     carrier = np.cos(2 * np.pi * carrier_freq * t)
-    
-    # Modulate
-    modulated = upsampled * carrier
-    return modulated
+
+    return upsampled * carrier
+
+
+# doc/api.md and most DSP references call this "psk_modulate" for the
+# generic binary case — keep both names pointing at the same function.
+psk_modulate = bpsk_modulate
 
 def qpsk_modulate(bits: np.ndarray, carrier_freq: float,
                   fs: float = 1000.0,
                   samples_per_symbol: int = 16) -> np.ndarray:
     """
     Quadrature Phase Shift Keying (QPSK) modulation.
+
+    Parameters
+    ----------
+    bits : ndarray
+        1D array of 0/1 bits. Padded with a trailing 0 if odd-length.
+    carrier_freq : float
+        Carrier frequency in Hz.
+    fs : float
+        Sampling frequency in Hz.
+    samples_per_symbol : int
+        Number of samples used to represent each symbol.
+
+    Returns
+    -------
+    ndarray
+        QPSK modulated signal (real part of the complex baseband signal).
     """
+    bits = np.asarray(bits)
+    if bits.size == 0:
+        raise ValueError("bits must contain at least one element")
+
     # Ensure even number of bits
     if len(bits) % 2 != 0:
         bits = np.append(bits, 0)  # Pad with zero if odd
-    
+
     # Group bits into pairs and map to symbols
     symbol_map = {
         (0, 0): 1+1j,    # 45 degrees
@@ -168,6 +218,13 @@ def generate_pn_sequence(length: int, taps: list) -> np.ndarray:
     pn_sequence : ndarray
         Binary PN sequence (±1)
     """
+    if length < 1:
+        raise ValueError(f"length must be a positive integer, got {length}")
+    if not taps:
+        raise ValueError("taps must contain at least one tap position")
+    if min(taps) < 1:
+        raise ValueError("tap positions are 1-indexed and must be >= 1")
+
     # Initialize LFSR with all ones
     register = np.ones(max(taps), dtype=int)
     sequence = []

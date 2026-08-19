@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="signal-processing-toolkit",
-    version="0.1.0",
+    version="0.2.0",
     author="SharmaSaurabh-git",
     author_email="lastyttry0@gmail.com",
     description="A comprehensive Python library for signal processing operations",
