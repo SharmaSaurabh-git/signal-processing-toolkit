@@ -20,7 +20,8 @@ A Python library for signal processing operations commonly used in Electronics a
 - [Testing](#testing)
 - [Contributing](#contributing)
 - [License](#license)
-
+- [Acknowledgments](#acknowledgments)
+  
 ## Example Output
 
 All plots below are generated directly from the library's own functions — see [Regenerate these plots yourself](#regenerate-these-plots-yourself) to reproduce them.
