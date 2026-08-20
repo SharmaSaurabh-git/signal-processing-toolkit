@@ -64,6 +64,11 @@ A Python library for signal processing operations commonly used in Electronics a
 
 ![PN sequence](doc/images/pn_sequence_demo.png)
 
+Regenerate these plots yourself:
+```bash
+python demo/generate_demo_plots.py    # filter, AM modulation, spectrogram, PN sequence
+python demo/extra_demo_plots.py       # QPSK constellation, eye diagram, FFT spectrum
+python demo/generate_sweep_gif.py     # animated filter cutoff sweep
 ## Features
 
 ### Core modules
