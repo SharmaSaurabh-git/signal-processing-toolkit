@@ -3,81 +3,87 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.7+](https://img.shields.io/badge/python-3.7%2B-blue.svg)](https://www.python.org/downloads/)
 [![Tests](https://github.com/SharmaSaurabh-git/signal-processing-toolkit/actions/workflows/ci.yml/badge.svg)](https://github.com/SharmaSaurabh-git/signal-processing-toolkit/actions/workflows/ci.yml)
+[![Latest Release](https://img.shields.io/github/v/release/SharmaSaurabh-git/signal-processing-toolkit)](https://github.com/SharmaSaurabh-git/signal-processing-toolkit/releases/latest)
 [![Code Size](https://img.shields.io/github/languages/code-size/SharmaSaurabh-git/signal-processing-toolkit)](https://github.com/SharmaSaurabh-git/signal-processing-toolkit)
 [![GitHub Stars](https://img.shields.io/github/stars/SharmaSaurabh-git/signal-processing-toolkit?style=social)](https://github.com/SharmaSaurabh-git/signal-processing-toolkit/stargazers)
 
 A Python library for signal processing operations commonly used in Electronics and Communication Engineering: FIR filter design, spectral analysis, and analog/digital modulation — built on NumPy and SciPy, with a small set of plotting and signal-generation utilities on top.
 
+## Table of Contents
+
+- [Example Output](#example-output)
+- [Features](#features)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Documentation](#documentation)
+- [Examples](#examples)
+- [Testing](#testing)
+- [Contributing](#contributing)
+- [License](#license)
+
 ## Example Output
 
-### Filter Design & Power Spectral Density
+All plots below are generated directly from the library's own functions — see [Regenerate these plots yourself](#regenerate-these-plots-yourself) to reproduce them.
 
+### Filter Design & Power Spectral Density
+`fir_lowpass` + `fir_filter_zero_phase` applied to a noisy 50 Hz sine wave, with before/after PSD comparison.
 
 ![Filter demo](doc/images/filter_demo.png)
 
-
-
 ### AM Modulation / Demodulation
-
+A 5 Hz message signal AM-modulated onto a 50 Hz carrier, then demodulated back using `am_modulate` / `am_demodulate`.
 
 ![Modulation demo](doc/images/modulation_demo.png)
 
-
-
 ### Live Filter Cutoff Sweep
-
+Animated sweep of `fir_lowpass` cutoff frequency from 20 Hz to 250 Hz, showing the filtered output update in real time.
 
 ![Filter sweep](doc/images/filter_sweep_demo.gif)
 
-
-
 ### STFT Spectrogram (Linear Chirp)
-
+Time-frequency view of a 20 Hz → 200 Hz linear chirp using `spectrogram`.
 
 ![Spectrogram](doc/images/spectrogram_demo.png)
 
-
-
 ### QPSK Constellation (Real Coherent Demodulation)
-
+I/Q symbols recovered from `qpsk_modulate` output via coherent demodulation using the library's own `fir_lowpass` and `fir_filter_zero_phase`.
 
 ![QPSK constellation](doc/images/qpsk_constellation.png)
 
-
-
 ### Eye Diagram (BPSK)
-
+Eye pattern generated from `bpsk_modulate` output using the library's `eye_diagram` plotting utility.
 
 ![Eye diagram](doc/images/eye_diagram.png)
 
-
-
 ### FFT Magnitude Spectrum
-
+Magnitude spectrum of a 50 Hz + 120 Hz composite signal using `fft`, `fftfreq`, and `fftshift`.
 
 ![FFT spectrum](doc/images/fft_spectrum.png)
 
-
-
 ### PN Sequence (LFSR)
-
+First 20 chips of a maximal-length PN sequence generated with polynomial x⁶ + x + 1 via `generate_pn_sequence`.
 
 ![PN sequence](doc/images/pn_sequence_demo.png)
 
-Regenerate these plots yourself:
+#### Regenerate these plots yourself
+
 ```bash
 python demo/generate_demo_plots.py    # filter, AM modulation, spectrogram, PN sequence
 python demo/extra_demo_plots.py       # QPSK constellation, eye diagram, FFT spectrum
 python demo/generate_sweep_gif.py     # animated filter cutoff sweep
 ```
+
 ## Features
+
 ### Core modules
+
 - **Filters** — FIR filter design (low-pass, high-pass, band-pass, band-stop) via the windowing method, plus causal and zero-phase filtering
 - **Transforms** — FFT/IFFT, power spectral density (Welch's method), spectrogram, STFT, coherence, cross-correlation
 - **Modulation** — AM/FM analog modulation and demodulation, BPSK/QPSK digital modulation, PN sequence (LFSR) generation
 - **Utilities** — test signal generation, time/frequency/spectrogram plotting, SNR calculation, eye diagrams
 
 ### Key capabilities
+
 - Parameterizable filter design with customizable windows
 - Both causal (`fir_filter`) and zero-phase (`fir_filter_zero_phase`) filtering, so you can pick whichever matches your use case — see [`doc/architecture.md`](doc/architecture.md) for the tradeoff
 - Input validation with clear error messages, not silent failures
@@ -127,7 +133,6 @@ Every line of this snippet is executed as part of the test/demo suite before eac
 
 - [API Documentation](doc/api.md) — function reference for every public module
 - [Architecture Overview](doc/architecture.md) — package layout, design decisions, known limitations
-- [Examples](signal_processing/examples/) — runnable `.py` scripts (`basic_filtering.py`, `comprehensive_demo.py`)
 - [Changelog](CHANGELOG.md) — what changed between releases
 - [Contributing Guide](CONTRIBUTING.md) — how to contribute
 
