@@ -69,8 +69,8 @@ Regenerate these plots yourself:
 python demo/generate_demo_plots.py    # filter, AM modulation, spectrogram, PN sequence
 python demo/extra_demo_plots.py       # QPSK constellation, eye diagram, FFT spectrum
 python demo/generate_sweep_gif.py     # animated filter cutoff sweep
+```
 ## Features
-
 ### Core modules
 - **Filters** — FIR filter design (low-pass, high-pass, band-pass, band-stop) via the windowing method, plus causal and zero-phase filtering
 - **Transforms** — FFT/IFFT, power spectral density (Welch's method), spectrogram, STFT, coherence, cross-correlation
