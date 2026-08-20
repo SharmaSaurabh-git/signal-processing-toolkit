@@ -8,6 +8,62 @@
 
 A Python library for signal processing operations commonly used in Electronics and Communication Engineering: FIR filter design, spectral analysis, and analog/digital modulation — built on NumPy and SciPy, with a small set of plotting and signal-generation utilities on top.
 
+## Example Output
+
+### Filter Design & Power Spectral Density
+
+
+![Filter demo](doc/images/filter_demo.png)
+
+
+
+### AM Modulation / Demodulation
+
+
+![Modulation demo](doc/images/modulation_demo.png)
+
+
+
+### Live Filter Cutoff Sweep
+
+
+![Filter sweep](doc/images/filter_sweep_demo.gif)
+
+
+
+### STFT Spectrogram (Linear Chirp)
+
+
+![Spectrogram](doc/images/spectrogram_demo.png)
+
+
+
+### QPSK Constellation (Real Coherent Demodulation)
+
+
+![QPSK constellation](doc/images/qpsk_constellation.png)
+
+
+
+### Eye Diagram (BPSK)
+
+
+![Eye diagram](doc/images/eye_diagram.png)
+
+
+
+### FFT Magnitude Spectrum
+
+
+![FFT spectrum](doc/images/fft_spectrum.png)
+
+
+
+### PN Sequence (LFSR)
+
+
+![PN sequence](doc/images/pn_sequence_demo.png)
+
 ## Features
 
 ### Core modules
